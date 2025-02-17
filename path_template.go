@@ -282,18 +282,18 @@ func ValidatePathTemplateRewrite(pathTemplateRewrite string, variableNames []str
 			return fmt.Errorf("Variable %s in path template rewrite is not present in the path template: %s", varName, pathTemplateRewrite)
 		}
 	}
-	return nil
 
+	return nil
 }
 
-func validatePathTemplateRewriteSyntax(pathTemplateRewrite string) (map[string]bool, error) {
+func validatePathTemplateRewriteSyntax(pathTemplateRewrite string) (map[string]struct{}, error) {
 	// the rewrite field must start with a /
 	if !strings.HasPrefix(pathTemplateRewrite, "/") {
 		return nil, fmt.Errorf("Replace path template must start with a /: %s", pathTemplateRewrite)
 	}
 
 	insideBrackets := false
-	rewriteVarNames := make(map[string]bool)
+	rewriteVarNames := make(map[string]struct{})
 	var startIndex int
 	for i, c := range pathTemplateRewrite {
 		switch c {
@@ -327,7 +327,7 @@ func validatePathTemplateRewriteSyntax(pathTemplateRewrite string) (map[string]b
 
 			// we don't care if we have the same variable twice here
 			// /{a}/{b}/{a} is a valid rewrite
-			rewriteVarNames[varName] = true
+			rewriteVarNames[varName] = struct{}{}
 			startIndex = i + 1
 		case '/':
 			if i < len(pathTemplateRewrite)-1 && pathTemplateRewrite[i+1] == '/' {
