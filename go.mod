@@ -1,6 +1,6 @@
 module github.com/bogdan-deac/path-template
 
-go 1.23.0
+go 1.24.0
 
 require gotest.tools/v3 v3.5.1
 
