@@ -8,10 +8,12 @@ import (
 )
 
 const (
-	defaultEnvoyMaxNameLength = 16
-	defaultEnvoyMinNameLength = 1
-	// at most 5 variables - {foo} or {foo=bar}
-	defaultEnvoyMaxVariablePerPath = 5
+	// in envoy, the variable name can be at most 16 characters long
+	MaxNameLength = 16
+	// in envoy, the variable name should be at least 1 character long
+	MinNameLength = 1
+	// in Envoy, you can have at most 5 variables - {foo} or {foo=bar}
+	MaxVariablePerPath = 5
 
 	pathGlob = "*"
 	textGlob = "**"
@@ -143,8 +145,8 @@ func ValidatePathTemplate(path string) ([]string, error) {
 				}
 				variableNames = append(variableNames, name)
 
-				if len(variableNames) > defaultEnvoyMaxVariablePerPath {
-					return nil, fmt.Errorf("Cannot have more than %d variables: %s", defaultEnvoyMaxVariablePerPath, path)
+				if len(variableNames) > MaxVariablePerPath {
+					return nil, fmt.Errorf("Cannot have more than %d variables: %s", MaxVariablePerPath, path)
 				}
 
 				// bar} -> remove closing bracket
@@ -201,8 +203,8 @@ func ValidatePathTemplate(path string) ([]string, error) {
 
 				variableNames = append(variableNames, name)
 
-				if len(variableNames) > defaultEnvoyMaxVariablePerPath {
-					return nil, fmt.Errorf("Cannot have more than %d variables: %s", defaultEnvoyMaxVariablePerPath, path)
+				if len(variableNames) > MaxVariablePerPath {
+					return nil, fmt.Errorf("Cannot have more than %d variables: %s", MaxVariablePerPath, path)
 				}
 			}
 		// <..>/prefix{...}/<..> or <..>/prefix*/<..> or <..>/prefix**/<..>
@@ -351,15 +353,15 @@ func validatePathTemplateRewriteSyntax(pathTemplateRewrite string) (map[string]s
 }
 
 func validateVariableName(name, fullString string) error {
-	if len(name) < defaultEnvoyMinNameLength {
+	if len(name) < MinNameLength {
 		return fmt.Errorf("Variable name cannot be empty: %s", fullString)
 	}
 
 	if !reVariableName.MatchString(name) {
 		return fmt.Errorf("Variable name must start with a letter and contain only alphanumeric characters and underscores: %s", name)
 	}
-	if len(name) > 16 {
-		return fmt.Errorf("Variable name exceeds 16 characters: %s", name)
+	if len(name) > MaxNameLength {
+		return fmt.Errorf("Variable name exceeds %d characters: %s", MaxNameLength, name)
 	}
 	return nil
 }
