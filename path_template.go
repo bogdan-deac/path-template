@@ -15,7 +15,9 @@ const (
 	// in Envoy, you can have at most 5 variables - {foo} or {foo=bar}
 	MaxVariablePerPath = 5
 
+	// matches a single path segment
 	pathGlob = "*"
+	//matches zero or more path segments
 	textGlob = "**"
 
 	// valid pchar from https://datatracker.ietf.org/doc/html/rfc3986#appendix-A
@@ -87,9 +89,7 @@ func ValidatePathTemplate(path string) ([]string, error) {
 		return nil, err
 	}
 
-	// PathTemplates may contain path globs, text globs and variables.
-	// Variable patterns may contain path or text globs. If a wildcard operator is found anywhere
-	// in the PathTemplate string, it must be the last (rightmost) wildcard operator.
+	// If a text glob is found anywhere in the PathTemplate string, it must be the last (rightmost) wildcard operator.
 	foundTextGlob := false
 
 	// Suffixes are also allowed for wildcard operators (ie *-suffix or {name}-suffix).
@@ -224,7 +224,6 @@ func parsePathTemplate(path string) ([]string, error) {
 	// remove leading slash
 	path = path[1:]
 
-	//split by slashes
 	segments := []string{}
 
 	// used for identifying the start of a new path segment - ie - what comes after /
