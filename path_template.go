@@ -13,8 +13,8 @@ const (
 	// at most 5 variables - {foo} or {foo=bar}
 	defaultEnvoyMaxVariablePerPath = 5
 
-	textGlob = "*"
-	pathGlob = "**"
+	pathGlob = "*"
+	textGlob = "**"
 
 	// valid pchar from https://datatracker.ietf.org/doc/html/rfc3986#appendix-A
 	validLiteralSymbolsReS = "a-zA-Z0-9-._~" + // unreserved
@@ -106,13 +106,13 @@ func ValidatePathTemplate(path string) ([]string, error) {
 		}
 		switch {
 		// <..>/*/<..>
-		case segment == textGlob:
+		case segment == pathGlob:
 			if foundTextGlob {
 				return nil, fmt.Errorf("Cannot have path glob (*) after text glob (**)")
 			}
 
 		// <..>/**/<..>
-		case segment == pathGlob:
+		case segment == textGlob:
 			if foundTextGlob {
 				return nil, fmt.Errorf("Cannot have text glob (**) after text glob (**)")
 			}
@@ -160,13 +160,13 @@ func ValidatePathTemplate(path string) ([]string, error) {
 				for _, patternSegment := range strings.Split(pattern, "/") {
 					switch {
 					// {foo=<..>/*/<..>}
-					case patternSegment == textGlob:
+					case patternSegment == pathGlob:
 						if foundTextGlob {
 							return nil, fmt.Errorf("Cannot have path glob (*) after text glob (**)")
 						}
 
 					// {foo=<..>/**/<..>}
-					case patternSegment == pathGlob:
+					case patternSegment == textGlob:
 						if foundTextGlob {
 							return nil, fmt.Errorf("Cannot have text glob (**) after text glob (**)")
 						}
