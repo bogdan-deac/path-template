@@ -96,7 +96,7 @@ func ValidatePathTemplate(path string) ([]string, error) {
 	// If a suffixed wildcard operator is found, it must be the last (rightmost) wildcard operator in the PathTemplate string.
 	foundSuffix := false
 
-	variableNames := []string{}
+	variableNames := make([]string, 0, MaxVariablePerPath)
 	for _, segment := range segments {
 		if foundSuffix {
 			return nil, fmt.Errorf("The suffixed operator must in be the final path component: %s", path)
